@@ -8,7 +8,7 @@ CITY_DATA = { 'chicago': 'chicago.csv',
               'washington': 'washington.csv' }
 
 #it has been chosen to asgin monday as 0 and not in one for convinence of the datetime package function .week()
-WEEKDAY = {'monday': 0, 
+WEEKDAY = {'monday': 0,
            'tuesday':1,
            'wednesday':2,
            'thursday':3,
@@ -18,7 +18,7 @@ WEEKDAY = {'monday': 0,
           }
 
 NUM_TO_WEEKDAY = {
-            0:'Monday', 
+            0:'Monday',
             1:'Tuesday',
             2:'Wednesday',
             3:'Thursday',
@@ -103,7 +103,7 @@ def load_data(city, time_filter, month, day):
     print("\nLoading data and preprocessing...")
     start_time = time.time()
     df = pd.read_csv(CITY_DATA[city])
-    
+
     #Create columns for the dataframe for convinience in calculations
     df['start_year']  = [int(value[0:4])   for value in df["Start Time"]]
     df['start_month'] = [int(value[5:7])   for value in df["Start Time"]]
@@ -111,20 +111,20 @@ def load_data(city, time_filter, month, day):
     df['start_hour']  = [int(value[11:13]) for value in df["Start Time"]]
     df['start_min']   = [int(value[14:16]) for value in df["Start Time"]]
     df['start_sec']   = [int(value[17:20]) for value in df["Start Time"]]
-    
+
     df['end_year']  = [int(value[0:4])   for value in df["End Time"]]
     df['end_month'] = [int(value[5:7])   for value in df["End Time"]]
     df['end_day']   = [int(value[8:10])  for value in df["End Time"]]
     df['end_hour']  = [int(value[11:13]) for value in df["End Time"]]
     df['end_min']   = [int(value[14:16]) for value in df["End Time"]]
     df['end_sec']   = [int(value[17:20]) for value in df["End Time"]]
-    
+
     #Create a new column for the dataframe containing the day of the week
     day_of_week = []
-    for index, row in df.iterrows():#note for the corrector of the code: please let me know if there is an ELEGANT efficient way to do this calculation (maybe with a general expression), since im afraid there is and I am not aware of its existance
-        day_of_week.append( dt.date(row["start_year"], row["start_month"], row["start_day"]).weekday()) 
+    for index, row in df.iterrows():
+        day_of_week.append( dt.date(row["start_year"], row["start_month"], row["start_day"]).weekday())
     df['day_of_week'] = day_of_week
-    
+
     #Apply the required filters and return the dataframe
     if time_filter == 'none':
         load_data_print(start_time)
@@ -142,7 +142,7 @@ def load_data(city, time_filter, month, day):
         return 1
 
 
-    
+
 def time_stats(df):
     """Displays statistics on the most frequent times of travel."""
 
@@ -156,11 +156,11 @@ def time_stats(df):
     # Display the most common day of week
     weekday_mode = NUM_TO_WEEKDAY[df['day_of_week'].mode()[0]]
     print("The most common day of the week has been " + weekday_mode + ".")
-    
+
     # Display the most common start hour
     start_hour_mode = [df['start_hour'].mode()[0]][0]
     print("The most common hour has been at " + str(start_hour_mode) + " hours.")
-    
+
     # Display the most common day
     sd_df = df[['start_year', 'start_month','start_day']]
     sd_df = sd_df.groupby(['start_day', 'start_month', 'start_year']).size().reset_index(name='counts')
@@ -168,7 +168,7 @@ def time_stats(df):
 
     cmonth, cday, cyear, ncounts = sd_df['start_month'].values[0], sd_df['start_day'].values[0], sd_df['start_year'].values[0], sd_df['counts'].values[0]
     print("The most common day has been on " + str(cday) + " " + NUM_TO_MONTH[cmonth] + " " + str(cyear) + ", having a total of " + str(ncounts)+ " bike rents.")
-    
+
     #Time controlling
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -192,13 +192,13 @@ def station_stats(df):
     ss_df = df[['Start Station', 'End Station']]
     ss_df = ss_df.groupby(['Start Station', 'End Station']).size().reset_index(name='counts')
     ss_df = ss_df.sort_values(by = ['counts'], ascending = [False])
-    
+
     ccomb_start_station, ccbom_end_station = ss_df['Start Station'].values[0], ss_df['End Station'].values[0]
     print("The most frequent combination of start station and end station trip bas been:")
     print("     -Start Station: " + ccomb_start_station)
     print("     -End Station:   " + ccbom_end_station)
     print("     Having a total of " + str(ss_df['counts'].values[0]) + ' bike rents.')
-    
+
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
@@ -208,14 +208,14 @@ def trip_duration_stats(df):
 
     print('\nCalculating Trip Duration...\n')
     start_time = time.time()
-    
+
     # compute a column on the data frame having the travel time of each bike rent
     df['travel_time'] = df['end_sec'] - df['start_sec'] + 60*(df['end_min']-df['start_min']) + 3600*(df['end_hour']-df['start_hour'])
-    
+
     # Display total travel time
     total_time = df['travel_time'].sum()
     print("The total travel time has been " + str(dt.timedelta(seconds=int(total_time))) + ".")
-    
+
     # Display mean travel time
     avg_time = df['travel_time'].mean()
     print("The average travel time has been " + str(dt.timedelta(seconds=int(avg_time))) + ".")
@@ -226,7 +226,7 @@ def trip_duration_stats(df):
 
 def user_stats(df, city):
     """Displays statistics on bikeshare users."""
-        
+
     print('\nCalculating User Stats...\n')
     start_time = time.time()
 
@@ -239,13 +239,13 @@ def user_stats(df, city):
         counts = ut_df.values[row][1]
         user_type = ut_df.values[row][0]
         print("There has been " + str(counts) + " bike rents done by " + user_type + " users." )
-    
+
     print("")
-    
+
     if city == "washington":
         return 0
-    
-    
+
+
     # Display counts of gender
 
     g_df = df[['Gender']]
@@ -262,8 +262,8 @@ def user_stats(df, city):
     print("\nThe earliest year of birth as been " + str(int(df['Birth Year'].min())))
     print("The most recent year of birth as been " + str(int(df['Birth Year'].max())))
     print("The most common year of birth has been " + str(int(df['Birth Year'].mode())))
-    
-    
+
+
     # Print end message
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -284,12 +284,12 @@ def display_data(df):
         print(original_df.iloc[rcount : rcount + 5])
         q = input("\n Would you like to display 5 more rows?\n").lower()
         rcount += 5
-    
-    
+
+
 def main():
     while True:
         city,time_filter, month, day = get_filters()
-        
+
 #         print('\n' + ''*40 + '\n')
 
         df = load_data(city, time_filter, month, day)
@@ -298,7 +298,7 @@ def main():
         trip_duration_stats(df)
         user_stats(df, city)
         display_data(df)
-        
+
         restart = input('\nWould you like to restart? Enter yes or no.\n').lower()
         if restart.lower() != 'yes':
             break
