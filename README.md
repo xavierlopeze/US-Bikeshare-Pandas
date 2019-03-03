@@ -1,3 +1,5 @@
+This project is the original work of Xavier López, it has been presented on March 2019 as part of the *Programming for data Science* nanodegree by Udacity.
+
 # Explore US Bikeshare Data using Python
 
 ### Description
