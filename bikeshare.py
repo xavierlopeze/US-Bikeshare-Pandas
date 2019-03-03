@@ -1,3 +1,5 @@
+#This code is the original work of Xavier López developed as an Udacity assignment on February 2019
+
 import time
 import pandas as pd
 import numpy as np
